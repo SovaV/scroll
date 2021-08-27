@@ -118,19 +118,3 @@ body {
 .stats-item:hover .material-icons {
   color: rgb(212, 189, 242);
 }
-
-.btn {
-  cursor: pointer;
-  margin-top: 30px;
-  line-height: 25px;
-  padding: 10px 35px;
-  border: 2px solid rgba(33, 43, 52, 1);
-  border-radius: 4px;
-  background-color: rgb(212, 189, 242);
-  margin-left: auto;
-  margin-right: auto;
-}
-
-.btn.is-hidden {
-  display: none;
-}

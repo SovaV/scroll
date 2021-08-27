@@ -4,16 +4,12 @@ import '@pnotify/core/dist/BrightTheme.css';
 
 import templCard from '../templates/card.hbs';
 import searchQuery from './apiService.js';
-import loadMoreBtn from './load-more-btn';
-
-import InfiniteScroll from './if';
 
 const galleryLet = document.querySelector('.gallery');
 const searchFormLet = document.querySelector('#search-form');
-const loadMoreBtnLet = document.querySelector('[data-action="load-more"]');
+const setContainer = document.querySelector('.container');
 
 searchFormLet.addEventListener('submit', onSearch);
-loadMoreBtnLet.addEventListener('click', onLoadMore);
 galleryLet.addEventListener('click', openModal);
 
 // ====== Modalka
@@ -43,7 +39,6 @@ function onSearch(e) {
 }
 
 function onLoadMore() {
-  loadMoreBtn.disable();
   searchQuery.fetchContent().then(cards => {
     renderingImgCard(cards);
   });
@@ -52,28 +47,20 @@ function onLoadMore() {
 function renderingImgCard(hits) {
   if (hits.length !== 0) {
     galleryLet.insertAdjacentHTML('beforeend', templCard(hits));
-    loadMoreBtn.show();
-    loadMoreBtn.enable();
-    scroll();
-    if (hits.length < 12) {
-      loadMoreBtn.hide();
-    }
   } else {
     ERROR();
   }
 }
 
 function enterLetters() {
-  loadMoreBtn.hide();
   error({
     text: '← Введи слово',
     delay: 1000,
   });
 }
 function ERROR() {
-  loadMoreBtn.hide();
   error({
-    text: '← Ошибка ввода',
+    text: '← Больше нет результатов',
     delay: 1000,
   });
 }
@@ -82,9 +69,17 @@ function clearInput() {
   searchFormLet.query.value = '';
   galleryLet.innerHTML = '';
 }
-function scroll() {
-  loadMoreBtnLet.scrollIntoView({
-    behavior: 'smooth',
-    block: 'end',
+
+// ===== бескінечний скролл
+function onEntry(entries) {
+  entries.forEach(entry => {
+    if (entry.isIntersecting && searchQuery.query) {
+      onLoadMore();
+    }
   });
 }
+
+const options = {};
+
+const observer = new IntersectionObserver(onEntry, options);
+observer.observe(setContainer);
